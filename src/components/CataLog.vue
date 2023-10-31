@@ -1,6 +1,9 @@
 
 <template>
     <div>
+        
+    <input type="text" v-model="searchQuery" placeholder="Search by Country Name" />
+    
       <table class="bordered-table">
         <thead>
           <tr>
@@ -15,7 +18,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="country in displayedCountries" :key="country.cca2">          
+          <tr v-for="country in filteredCountries" :key="country.cca2">          
 
             <td><img :src="country.flags.png" alt="Flag" /></td>
             <td>{{ country.name.official }}</td>
@@ -67,6 +70,7 @@
             countries: [], // Your data
             currentPage: 1,
             itemsPerPage: 25,
+            searchQuery: "",
         };
     },
     computed: {
@@ -75,6 +79,18 @@
             const end = start + this.itemsPerPage;
             return this.countries.slice(start, end);
         },
+        filteredCountries() {
+            const query = this.searchQuery.toLowerCase().trim();
+            if (query === "") {
+                return this.displayedCountries;
+            } else {
+                return this.displayedCountries.filter((country) => {
+                const countryName = country.name.official.toLowerCase();
+                return countryName.includes(query);
+                });
+            }
+        },
+
     },
     mounted() {
         this.fetchData();
