@@ -1,6 +1,18 @@
 
 <template>
+
+  
+
+
+
     <div>
+      
+      
+    <CountryModal
+      v-if="showModal"
+      :countryData="selectedCountry"
+      @close="showModal = false"
+    />
         
     <input type="text" v-model="searchQuery" placeholder="Search by Country Name" />
     
@@ -22,7 +34,7 @@
           <tr v-for="country in filteredAndSortedCountries" :key="country.cca2">          
 
             <td><img :src="country.flags.png" alt="Flag" /></td>
-            <td>
+            <td @click="openModal(country)">
               <span v-if="country.name && country.name.official">{{ country.name.official }}</span>
             </td>
             <td>{{ country.cca2 }}</td>
@@ -46,6 +58,8 @@
         <span>{{ currentPage }}</span>
         <button @click="nextPage">Next</button>
       </div>
+
+
     </div>
   </template>
   
@@ -71,8 +85,14 @@
   
   <script>
     import axios from 'axios';
+    import CountryModal from './modals/CountryModal.vue'; // Adjust the path to match the actual location
+
 
     export default {
+    components: {
+      CountryModal,
+    },
+      
     data() {
         return {
             countries: [], // Your data
@@ -81,7 +101,8 @@
             searchQuery: "",
             sortField: "name.official", // Default sort field
             sortDirection: 1, // 1 for ascending, -1 for descending
-
+            showModal: false,
+            selectedCountry: null,
         };
     },
     computed: {
@@ -159,7 +180,14 @@
             console.log(this.sortDirection);
         },
         
+        openModal(country) {
+          this.selectedCountry = country;
+          this.showModal = true; // Set showModal to true to open the modal
 
+          console.log('Modal should be open:', this.showModal);
+
+        }
+        
     },
     };
 </script>

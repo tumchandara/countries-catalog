@@ -3,6 +3,7 @@
    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/>  -->
 
   <CataLog />
+  <CountryModal /> <!-- Use the CountryModal component here -->
 
 </template>
 
