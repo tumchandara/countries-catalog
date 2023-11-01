@@ -21,13 +21,20 @@
           <tr v-for="country in filteredCountries" :key="country.cca2">          
 
             <td><img :src="country.flags.png" alt="Flag" /></td>
-            <td>{{ country.name.official }}</td>
+            <td>
+              <span v-if="country.name && country.name.official">{{ country.name.official }}</span>
+            </td>
             <td>{{ country.cca2 }}</td>
             <td>{{ country.cca3 }}</td>
-            <td>{{ country.name.nativeName[Object.keys(country.name.nativeName)[0]].official }}</td>
-            <td>{{ country.altSpellings.join(', ') }}</td>
-            <td>{{ country.idd.root }}{{ country.idd.suffixes.join(', ') }}</td>
-
+            <td>
+              <span v-if="country.name && country.name.nativeName && Object.keys(country.name.nativeName).length > 0">{{ country.name.nativeName[Object.keys(country.name.nativeName)[0]].official }}</span>
+            </td>
+            <td>
+              <span v-if="country.altSpellings && country.altSpellings.length > 0">{{ country.altSpellings.join(', ') }}</span>
+            </td>
+            <td>
+              <span v-if="country.idd && country.idd.root">{{ country.idd.root }}{{ country.idd.suffixes.join(', ') }}</span>
+            </td>
 
           </tr>
         </tbody>
@@ -99,7 +106,11 @@
         async fetchData() {
             try {
                 const response = await axios.get('https://restcountries.com/v3.1/all');
+
+                console.log(response.data);
                 this.countries = response.data;
+
+                
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
