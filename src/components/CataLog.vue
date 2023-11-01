@@ -8,7 +8,8 @@
         <thead>
           <tr>
             <th>Flags</th>
-            <th>Country Name</th>
+            <th @click="sortCountries('name.official')">Country Name</th>
+
             <th>2 character Country Code</th>
             <th>3 character Country Code</th>
             <th>Native Country Name</th>
@@ -18,7 +19,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="country in filteredCountries" :key="country.cca2">          
+          <tr v-for="country in filteredAndSortedCountries" :key="country.cca2">          
 
             <td><img :src="country.flags.png" alt="Flag" /></td>
             <td>
@@ -78,6 +79,9 @@
             currentPage: 1,
             itemsPerPage: 25,
             searchQuery: "",
+            sortField: "name.official", // Default sort field
+            sortDirection: 1, // 1 for ascending, -1 for descending
+
         };
     },
     computed: {
@@ -86,17 +90,29 @@
             const end = start + this.itemsPerPage;
             return this.countries.slice(start, end);
         },
-        filteredCountries() {
-            const query = this.searchQuery.toLowerCase().trim();
-            if (query === "") {
-                return this.displayedCountries;
-            } else {
-                return this.displayedCountries.filter((country) => {
-                const countryName = country.name.official.toLowerCase();
-                return countryName.includes(query);
-                });
-            }
+        sortedCountries() {
+          return this.displayedCountries.slice().sort((a, b) => {
+            const fieldA = (a[this.sortField] || '').toLowerCase();
+            const fieldB = (b[this.sortField] || '').toLowerCase();
+            return (fieldA < fieldB ? -1 : 1) * this.sortDirection;
+          });
         },
+
+        filteredAndSortedCountries() {
+          return this.displayedCountries.slice().filter((country) => {
+            const query = this.searchQuery.toLowerCase().trim();
+            if (query === '') {
+              return true;
+            }
+            const countryName = country.name.official.toLowerCase();
+            return countryName.includes(query);
+          }).sort((a, b) => {
+            const fieldA = (a[this.sortField] || '').toLowerCase();
+            const fieldB = (b[this.sortField] || '').toLowerCase();
+            return (fieldA < fieldB ? -1 : 1) * this.sortDirection;
+          });
+        },
+        
 
     },
     mounted() {
@@ -127,10 +143,22 @@
         },
 
         prevPage() {
-        if (this.currentPage > 1) {
-            this.currentPage--;
-        }
+          if (this.currentPage > 1) {
+              this.currentPage--;
+          }
         },
+
+        sortCountries(field) {
+          if (field === this.sortField) {
+            this.sortDirection = -this.sortDirection;
+          } else {
+            this.sortField = field;
+            this.sortDirection = 1;
+          }
+
+            console.log(this.sortDirection);
+        },
+        
 
     },
     };
